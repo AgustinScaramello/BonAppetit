@@ -1,7 +1,27 @@
-const { ProductClass } = require("../db");
+const { ProductClass, Product } = require("../db");
 
 const findAllProductClasses = async () => {
-  const classes = await ProductClass.findAll();
+  const classes = await ProductClass.findAll({
+    where: { deleted: false },
+    order: ["id"],
+    include: {
+      model: Product,
+      attributes: [
+        "id",
+        "name",
+        "price",
+        "image",
+        "stock",
+        "qualification",
+        "time",
+        "enable",
+        "description",
+      ],
+      through: {
+        attributes: [],
+      },
+    },
+  });
   return classes;
 };
 
@@ -20,9 +40,12 @@ const initializeProductClassesArray = async () => {
     const classesFromDatabase = await findAllProductClasses();
     productClassArray.push(...classesFromDatabase);
   } catch (error) {
-    console.error('Error al obtener las clases de productos desde la base de datos:', error);
+    console.error(
+      "Error al obtener las clases de productos desde la base de datos:",
+      error
+    );
   }
-}
+};
 
 const createProductClass = async (productClass, image) => {
   console.log(image);
@@ -31,17 +54,19 @@ const createProductClass = async (productClass, image) => {
     image: image,
   });
   return newClass;
-  };
+};
 
 //--------------------------------------------------------------------
 const destroyProductClass = async (id) => {
   const productClass = await ProductClass.findByPk(id);
-  if (productClass) {
-    productClass.destroy();
-    return "clase de producto borrada con exito";
-  } else {
-    return "no hay nada para borrar";
+  if (!productClass.id) {
+    return "No hay nada para borrar";
   }
+  if (productClass.deleted) {
+    return "Este producto ya estaba borrado";
+  }
+  ProductClass.update({ deleted: true }, { where: { id: id } });
+  return "Producto borrado";
 };
 
 const updateProductClass = async (id, productClass) => {
@@ -57,5 +82,5 @@ module.exports = {
   updateProductClass,
   addProductClass,
   getProductClass,
-  initializeProductClassesArray
+  initializeProductClassesArray,
 };

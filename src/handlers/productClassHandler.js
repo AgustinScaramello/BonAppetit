@@ -4,8 +4,9 @@ const {
   destroyProductClass,
   updateProductClass,
   addProductClass,
-  getProductClass
+  getProductClass,
 } = require("../controllers/productClassController.js");
+const { ProductClass } = require("../db");
 
 // handler que trae todos las clases de productos
 const getAllProductClasses = async (req, res) => {
@@ -22,7 +23,7 @@ const postProductClass = async (req, res) => {
   try {
     const { productClass, image } = req.body;
     // console.log(productClass, image);
-    const newClass = await createProductClass(productClass, image);// Crea la nueva clase de producto como un objeto
+    const newClass = await createProductClass(productClass, image); // Crea la nueva clase de producto como un objeto
     addProductClass(newClass); // Agrega la nueva clase al array global
     const updatedClasses = getProductClass(); // Devuelve el array de clases de productos actualizado
     res.status(201).json(updatedClasses);
@@ -55,9 +56,43 @@ const putProductClass = async (req, res) => {
 };
 
 
+const putUpdateProductClass = async (req, res) =>{
+  try {
+    const { updatedArray } = req.body;
+    for (const updatedObject of updatedArray) {
+      if (!updatedObject.id) {
+        //console.log("class", updatedObject.class);
+        await ProductClass.create(updatedObject);
+      } else {
+        console.log("class", updatedObject.class);
+        await ProductClass.update(
+          {
+            class: updatedObject.class,
+            image: updatedObject.image,
+            enable: updatedObject.enable,
+          },
+          {
+            where: { id: updatedObject.id },
+          }
+        );
+      }
+    }
+    
+    let productClassArray = await ProductClass.findAll();
+    const responseArray = productClassArray.map((item) => ({
+      ...item.toJSON(),
+      Products: [],
+    }));
+    res.status(200).json(responseArray);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAllProductClasses,
   postProductClass,
   deleteProductClass,
   putProductClass,
+  putUpdateProductClass
 };

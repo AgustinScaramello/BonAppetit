@@ -9,9 +9,11 @@ const changeTypeUser = async (req, res) => {
       return res.status(404).json("El usuario no fue encontrado");
     }
     user.role = role;
+
     await user.save();
+    const users = await User.findAll();
     console.log("El tipo de usuario ha sido cambiado correctamente");
-    res.status(200).json("El tipo de usuario ha sido cambiado correctamente");
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

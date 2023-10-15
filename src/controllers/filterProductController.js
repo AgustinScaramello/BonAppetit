@@ -14,7 +14,7 @@ const filterProduct = async (filterBy) => {
       {
         model: ProductClass,
         where: { class: filterBy.className },
-        attributes: ["class"],
+        attributes: ["id", "class", "image", "enable"],
         through: {
           attributes: [],
         },
@@ -23,7 +23,7 @@ const filterProduct = async (filterBy) => {
   } else {
     include = {
       model: ProductClass,
-      attributes: ["class"],
+      attributes: ["id", "class", "image", "enable"],
       through: {
         attributes: [],
       },

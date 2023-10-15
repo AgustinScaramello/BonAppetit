@@ -1,4 +1,4 @@
-const { Product, ProductClass } = require("../db");
+const { Product, ProductClass, Qualification } = require("../db");
 const data = require("../data");
 
 const loadingFamilyAndProduct = async () => {
@@ -27,6 +27,12 @@ const loadingFamilyAndProduct = async () => {
         description: receta.desc,
       });
       await newProduct.addProductClasses(productClass.id);
+
+      await Qualification.create({
+        id: newProduct.id,
+        sum: 0,
+        amount: 0,
+      });
     }
   }
 };

@@ -19,6 +19,6 @@ userRouter.post("/create", createUser);
 userRouter.put("/disableUser/:uid", disableUser);
 
 userRouter.put("/put", changePasswordUser);
-userRouter.post("/update", changeTypeUser);
+userRouter.put("/update", changeTypeUser);
 
 module.exports = userRouter;

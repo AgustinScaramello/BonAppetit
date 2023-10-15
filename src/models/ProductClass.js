@@ -21,8 +21,11 @@ module.exports = (sequelize) => {
       enable: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
-        allowNull: false
-        
+        allowNull: false,
+      },
+      deleted: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       },
     },
     { timestamps: false }

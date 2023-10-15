@@ -3,6 +3,7 @@ const admin = require("firebase-admin");
 const URL_FRONT = process.env.URL_FRONT;
 const { User } = require("../db");
 const { sendEmail } = require("../config/sendGridConfig");
+const { htmlEmailConfirm, linkRecoveryPassword } = require("../utils/msgHTMLEmailConfirm");
 
 /* 
 Esta es la posible respuesta de Firebase para un usuario nuevo
@@ -64,9 +65,9 @@ const handlerCreateUser = async (req) => {
         .generateEmailVerificationLink(userRecord.email, actionCodeSettings);
       const msg = {
         to: `${email}`,
-        from: `noreply.bonapptit@gmail.com`, // Use the email address or domain you verified above
-        subject: "Confirmación del correo electrónico",
-        text: `Haz click en el siguiente enlace para confirmar tu correo electrónico: ${link} \n\n Si no creaste esta cuenta, puedes ignorar este mensaje`,
+        from: `noreply.bonapptit@gmail.com`,
+        subject: "Confirmación de Correo Electrónico para Bon Appétit",
+        html: htmlEmailConfirm(link, userRecord.displayName),
       };
       await sendEmail(msg);
 
@@ -83,8 +84,8 @@ const sendCustomPasswordResetEmail = async (email, link) => {
   const msg = {
     to: `${email}`,
     from: `noreply.bonapptit@gmail.com`, // Use the email address or domain you verified above
-    subject: "Cambio de contraseña",
-    text: `Haz click en el siguiente enlace para cambiar tu contraseña: ${link} \n\n Si no solicitaste el cambio, puedes ignorar este mensaje`,
+    subject: "Restablecer Contraseña para Bon Appétit",
+    html: linkRecoveryPassword(link),
   };
   await sendEmail(msg);
 };

@@ -7,11 +7,16 @@ const qualifyProduct = async (arrQualification) => {
     if (exists) {
       const sum = exists.sum + qualification.points;
       const amount = exists.amount + 1;
+      const addComment =
+        exists.comment === null
+          ? [qualification.comment]
+          : [...exists.comment, qualification.comment];
 
       await Qualification.update(
         {
           sum: sum,
           amount: amount,
+          comment: addComment,
         },
         { where: { id: qualification.idProduct } }
       );
@@ -20,6 +25,7 @@ const qualifyProduct = async (arrQualification) => {
         id: qualification.idProduct,
         sum: qualification.points,
         amount: 1,
+        comment: qualification.comment ? [qualification.comment] : [],
       });
     }
 
@@ -33,4 +39,9 @@ const qualifyProduct = async (arrQualification) => {
   }
 };
 
-module.exports = qualifyProduct;
+const qualificationComment = async (id) => {
+  const comment = await Qualification.findByPk(id);
+  return comment;
+};
+
+module.exports = { qualifyProduct, qualificationComment };
